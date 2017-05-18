@@ -1,0 +1,78 @@
+classdef Cycler < handle
+    properties
+        hardwareParameters
+        stimulusComponents
+    end
+    
+    properties (Access = private)
+        currOffset
+        offsetMin
+        offsetMax
+        
+        continueCycling
+    end
+    
+    methods
+        function obj = Cycler(hardwareParameters, stimulusComponents)
+            obj.hardwareParameters = hardwareParameters;
+            obj.stimulusComponents = stimulusComponents;
+            obj.currOffset = 0;
+            obj.continueCycling = true;
+        end
+        
+        function IncrementOffset(obj)
+            if obj.currOffset < obj.offsetMax
+                obj.currOffset = obj.currOffset + 1;
+            end
+        end
+        
+        function DecrementOffset(obj)
+            if obj.currOffset > obj.offsetMin
+                obj.currOffset = obj.currOffset - 1;
+            end
+        end
+        
+        function DisplayFrame(obj, frameNumber)
+            if 
+            % frameNumber will be in units of HARDWARE SIGNAL!!!
+            
+            % this will be the core method, it will control what frame is
+            % returned based on the frame number and the current offset
+            
+        end
+        
+        function ConstructFrameInQuadrants()
+            
+        end
+        
+        function ConstructFrameEntireScreen()
+            
+        end
+        
+        % this may be the only thing that needs to be overriden in
+        % subclasses ...
+        function frame = GenerateSingleFrame(obj, frameTime)
+            
+        end
+        
+        function frames = TimeToFrames(obj, time)
+            
+        end
+        
+        function time = FramesToTime(obj, frames)
+            
+        end
+        
+        function CompileResults(obj)
+            
+        end
+        
+        function tf = ToContinueCycling(obj)
+            tf = obj.continueCycling;
+        end
+        
+        function StopCycling(obj)
+           obj.continueCycling = false; 
+        end
+    end
+end

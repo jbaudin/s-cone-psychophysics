@@ -1,0 +1,25 @@
+function results = RunExperiment(cycler, keyboardCheckInterval, maxRuntime)
+% convert the runtime from seconds to frames
+maxRuntimeInFrames = cycler
+
+currFrame = 1;
+keyboardTimer = SConePsychophysics.Utils.KeyboardInputTimer(keyboardCheckInterval);
+while currFrame <= maxRuntimeInFrames && cycler.continueCycling
+    
+    
+    
+    
+    % increment the frame counter
+    currFrame = currFrame + 1;
+    
+    % if sufficient time has passed, check the keyboard for input
+    if keyboardTimer.CheckKeyboard();
+        [isKey, ~, keyCode, ~] = KbCheck();
+        
+        if isKey
+            SConePsychophysics.Utils.HandleKeyboardInput(keyCode, cycler);
+            keyboardTimer.Reset();
+        end
+    end
+end
+end
