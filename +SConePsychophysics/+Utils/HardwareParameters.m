@@ -10,6 +10,8 @@ classdef HardwareParameters < SConePsychophysics.Utils.Parameters
     properties (Dependent)
         theoreticalRefreshRate
         theoreticalFrameDuration
+        frameWidth
+        frameHeight
     end
     
     methods
@@ -20,6 +22,14 @@ classdef HardwareParameters < SConePsychophysics.Utils.Parameters
         
         function value = get.theoreticalFrameDuration(obj)
             value = 1 / obj.theoreticalRefreshRate;
+        end
+        
+        function value = get.frameWidth(obj)
+            value = obj.width / (1 + obj.renderInQuadrants);
+        end
+        
+        function value = get.frameHeight(obj)
+            value = obj.height / (1 + obj.renderInQuadrants);
         end
     end
 end

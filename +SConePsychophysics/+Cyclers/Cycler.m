@@ -1,96 +1,69 @@
 classdef Cycler < handle
     properties
         hardwareParameters
+        stimulusParameters
         stimulusComponents
     end
     
-    properties (Access = private)
+    properties (Access = protected)
         currOffset
         offsetMin
         offsetMax
         
         continueCycling
         drawTextureFxn
-        
-        baseRectangleCenter
-        rectangleCenterOffsets
+    end
+    
+    methods (Abstract)
+        % this may be the only thing that needs to be overriden in
+        % subclasses ...
+        % should return the frame and a rotation to use
+        DrawTextureInQuadrants(obj, frameNum)
+        DrawTextureEntireScreen(obj, frameNum)
     end
     
     methods
-        function obj = Cycler(hardwareParameters, stimulusComponents)
+        function obj = Cycler(hardwareParameters, stimulusParameters, stimulusComponents)
             obj.hardwareParameters = hardwareParameters;
             obj.stimulusComponents = stimulusComponents;
+            obj.stimulusParameters = stimulusParameters;
             obj.currOffset = 0;
+            obj.offsetMax = floor(stimulusParameters.maxOffset / stimulusParameters.offsetStepSize);
+            obj.offsetMin = ceil(stimulusParameters.minOffset / stimulusParameters.offsetStepSize);
             obj.continueCycling = true;
             
             if obj.hardwareParameters.renderInQuadrants
-                obj.drawTextureFxn = @(frameNum) obj.DrawTextureInQuadrants(frameNume);
-                obj.baseRectangleCenter = CenterRectOnPoint( ...
-                    SConePsychophysics.Utils.GetFrameRectangle(obj.hardwareParameters), ...
-                    obj.hardwareParameters.width / 4, obj.hardwareParameters.height / 4);
-                obj.ComputeRectangleCenterOffsets();
+                obj.drawTextureFxn = @(frameNum) obj.DrawTextureInQuadrants(frameNum);
             else
                 obj.drawTextureFxn = @(frameNum) obj.DrawTextureEntireScreen(frameNum);
-                obj.baseRectangleCenter = CenterRectOnPoint( ...
-                    SConePsychophysics.Utils.GetFrameRectangle(obj.hardwareParameters), ...
-                    obj.hardwareParameters.width / 2, obj.hardwareParameters.height / 2);
             end
         end
         
-        function ComputeRectangleCenterOffsets(obj)
-            width = obj.hardwareParameters.width;
-            height = obj.hardwareParameters.height;
-            obj.rectangleCenterOffsets = {[0 0 0 0], ...
-                [(width / 2) 0 (width / 2) 0], ...
-                [0 (height / 2) 0 (height / 2)], ...
-                [(width / 2) (height / 2) (width / 2) (height / 2)]};
+        function rect = DetermineStimulusRectangle(obj)
+            sideLength = 2 * obj.stimulusParameters.radius + 1;
+            rect = [0 0 sideLength sideLength];
         end
         
         function IncrementOffset(obj)
-            if obj.currOffset < obj.offsetMax
-                obj.currOffset = obj.currOffset + 1;
-            end
+            obj.currOffset = min(obj.currOffset + 1, obj.offsetMax);
         end
         
         function DecrementOffset(obj)
-            if obj.currOffset > obj.offsetMin
-                obj.currOffset = obj.currOffset - 1;
-            end
+            obj.currOffset = max(obj.currOffset - 1, obj.offsetMin);
         end
         
         function DisplayFrame(obj, frameNumber)
             % call the appropriate draw texture method (defined in
             % constructor)
-            obj.drawTextureFxn(obj.FramesToTime(frameNumber));            
-        end
-        
-        function DrawTextureInQuadrants(obj, frameTime)
-            frameTimes = frameTime + ((0:3) / 4) * obj.hardwareParameters.theoreticalFrameDuration;
-            for i = 1:4
-                [texture, rotation] = obj.GenerateSingleFrame(frameTimes(i));
-                Screen('DrawTexture', ...
-                    obj.hardwareParameters.window, ...
-                    texture, ...
-                    [], ...
-                    obj.baseRectangleCenter + obj.rectangleCenterOffsets{i}, ...
-                    rotation);
-            end
-        end
-        
-        function DrawTextureEntireScreen(obj, frameTime)
-            [texture, rotation] = obj.GenerateSingleFrame(frameTime);
-            Screen('DrawTexture', ...
-                obj.hardwareParameters.window, ...
-                texture, ...
-                [], ...
-                obj.baseRectangelCenter, ...
-                rotation);
-        end
-        
-        % this may be the only thing that needs to be overriden in
-        % subclasses ...
-        function frame, rotation = GenerateSingleFrameTexture(obj, frameTime)
+            obj.drawTextureFxn(obj.FramesToTime(frameNumber));
             
+            % flip the image from the buffer to the front (i.e., display
+            % the texture that was just created)
+            Screen('Flip', obj.hardwareParameters.window);
+        end
+        
+        function frameTimes = CalculateQuadrantFrameTimes(obj, frameTime)
+            frameTimes = frameTime + ((0:3) / 4) * obj.hardwareParameters.theoreticalFrameDuration;
         end
         
         function frames = TimeToFrames(obj, time)
@@ -101,8 +74,12 @@ classdef Cycler < handle
             time = frames / obj.hardwareParameters.theoreticalRefreshRate;
         end
         
-        function CompileResults(obj)
-            disp('implement CompileResults!');
+        function results = CompileResults(obj)
+            results = SConePsychophysics.Utils.Results();
+            offsetInRadians = obj.currOffset * obj.stimulusParameters.offsetStepSize;
+            results.Add('offset in radians', offsetInRadians);
+            results.Add('frequency', obj.stimulusParameters.frequency);
+            results.Add('offset in seconds', (offsetInRadians/ (2 * pi)) / obj.stimulusParameters.frequency);
         end
         
         function tf = ToContinueCycling(obj)

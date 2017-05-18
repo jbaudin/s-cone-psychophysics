@@ -5,13 +5,13 @@ classdef KeyboardInputTimer < handle
     end
     
     methods
-        function obj = Timer(minimumCheckInterval)
-            obj.minimiumCheckInterval = minimumCheckInterval;
+        function obj = KeyboardInputTimer(minimumCheckInterval)
+            obj.minimumCheckInterval = minimumCheckInterval;
             obj.startTime = tic;
         end
         
         function tf = ToCheckKeyboard(obj)
-            tf = (toc - obj.startTime) >= obj.minimumCheckInterval;
+            tf = toc(obj.startTime) >= obj.minimumCheckInterval;
         end
         
         function Reset(obj)

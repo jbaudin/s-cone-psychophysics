@@ -1,6 +1,15 @@
-function Window(hardwareParameters)
-% get the screenid - depending on configuration, this could need changing
-screenId = max(Screen('Screens'));
+function Window(hardwareParameters, varargin)
+ip = inputParser();
+ip.addOptional('DebugMode', false, @(x) islogical(x));
+ip.addOptional('DebugModeScreen', 0, @(x) isnumeric(x) && numel(x) == 1 && x >= 0 && round(x) == x);
+ip.parse(varargin{:});
+
+% get the screenid - can be overriden by placing in debug mode
+if ip.Results.DebugMode
+    screenId = ip.Results.DebugModeScreen;
+else
+    screenId = max(Screen('Screens'));
+end
 
 % open window for the specified screen
 defaultWindowColor = SConePsychophysics.Constants.BACKGROUND_INTENSITY * 255;

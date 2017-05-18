@@ -12,7 +12,7 @@ keyboardTimer = SConePsychophysics.Utils.KeyboardInputTimer(keyboardCheckInterva
 
 % run the actual experiment by showing successive frames and checking
 % for user input
-while frameNumber <= maxRuntimeInFrames && cycler.continueCycling
+while frameNumber <= maxRuntimeInFrames && cycler.ToContinueCycling()
     % have the cycler display the frame
     cycler.DisplayFrame(frameNumber)
     

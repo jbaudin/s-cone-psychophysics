@@ -1,10 +1,11 @@
 function HandleKeyboardInput(keyCode, cycler)
-switch keyCode
+keyName = KbName(keyCode);
+switch keyName
     case 'LeftArrow'
         cycler.DecrementOffset();
     case 'RightArrow'
         cycler.IncrementOffset();
-    case 'Space'
+    case 'space'
         cycler.StopCycling();
 end
 end

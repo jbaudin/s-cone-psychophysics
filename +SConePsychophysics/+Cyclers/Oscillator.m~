@@ -13,12 +13,10 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
     properties
         factorInSine
         shapeRectangles
-        modulationAmplitude
     end
     
     properties (Dependent)
         currColor
-        currPhaseOffsets
     end
     
     methods
@@ -69,12 +67,7 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
         end
         
         function shapeColor = CalculateShapeColor(obj, frameTime)
-            shapeColor = obj.stimulusParameters.backgroundIntensity + obj.modulationAmplitude * ...
-                arrayfun(@(x) sin(obj.factorInSine * frameTime + x), obj.currPhaseOffsets);
-        end
-        
-        function value = get.currPhaseOffsets(obj)
-            value = [0 0 obj.stimulusComponents(obj.currOffset)];
+            color = obj.stimulusParameters.
         end
     end
 end
