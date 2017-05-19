@@ -2,15 +2,22 @@
 clc;
 p = SConePsychophysics.StimulusGenerators.BenhamsTop.Parameters.DebugExample();
 g = @SConePsychophysics.StimulusGenerators.BenhamsTop.Generate;
-s = '/Users/jacobbaudin/Desktop/resu lts';
+s = '/Users/jacobbaudin/Desktop/results';
 SConePsychophysics.Main(p, g, s, 'DebugMode', true, 'RenderInQuadrants', true);
 
 %% Flicker
 clc;
 p =  SConePsychophysics.StimulusGenerators.Flicker.Parameters.DebugExample();
+g = @SConePsychophysics.StimulusGenerato rs.Flicker.Generate;
+s = '/Users/jacobbaudin/Desktop/results';
+SConePsychophysics.Main(p, g, s, 'DebugMode', true, 'RenderInQuadrants', true);
+
+%% Stockman
+clc;
+p =  SConePsychophysics.StimulusGenerators.Flicker.Parameters.StockmanExample();
 g = @SConePsychophysics.StimulusGenerators.Flicker.Generate;
 s = '/Users/jacobbaudin/Desktop/results';
 SConePsychophysics.Main(p, g, s, 'DebugMode', true, 'RenderInQuadrants', true);
 
 %%
-Screen('CloseAll'); 
+Screen('CloseAll');  

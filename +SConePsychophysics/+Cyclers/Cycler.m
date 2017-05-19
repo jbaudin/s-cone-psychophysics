@@ -74,16 +74,6 @@ classdef Cycler < handle
             time = frames / obj.hardwareParameters.theoreticalRefreshRate;
         end
         
-        function results = CompileResults(obj)
-            results = SConePsychophysics.Utils.Results();
-            offsetInRadians = obj.currOffset * obj.stimulusParameters.offsetStepSize;
-            offsetInSeconds = (offsetInRadians/ (2 * pi)) / obj.stimulusParameters.frequency;
-            results.Add('offset in radians', offsetInRadians);
-            results.Add('frequency', obj.stimulusParameters.frequency);
-            results.Add('offset in seconds', offsetInSeconds);
-            results.Add('offset in milliseconds',1000 * offsetInSeconds); 
-        end
-        
         function tf = ToContinueCycling(obj)
             tf = obj.continueCycling;
         end

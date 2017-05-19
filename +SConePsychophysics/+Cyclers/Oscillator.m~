@@ -20,9 +20,9 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
     %       stimulus
     
     properties
-        factorsInSine
+        factorInSine
         shapeRectangles
-        modulationAmplitudeRGB
+        modulationAmplitude
     end
     
     properties (Dependent)
@@ -31,23 +31,23 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
     end
     
     methods
-%         function obj = Oscillator(hardwareParameters, stimulusParameters, stimulusComponents)
-%             obj = obj@SConePsychophysics.Cyclers.Cycler(hardwareParameters, stimulusParameters, stimulusComponents);
-%             
-%             obj.ComputeShapeRectangles();
-%             obj.factorInSine = 2 * pi * obj.stimulusParameters.frequency;
-%             obj.modulationAmplitude = obj.stimulusParameters.peakIntensity - obj.stimulusParameters.backgroundIntensity;
-%         end
- 
-% NEW VERSION
         function obj = Oscillator(hardwareParameters, stimulusParameters, stimulusComponents)
-           obj = obj@SConePsychophysics.Cyclers.Cycler(hardwareParameters, stimulusParameters, stimulusComponents);
-           
-           obj.ComputeShapeRectangles();
-           obj.factorsInSine = 2 * pi * obj.stimulusParameters.frequenciesRGB;
-           obj.modulationAmplitudeRGB = ...
-               obj.stimulusParameters.peakIntensityRGB - obj.stimulusParameters.backgroundIntensityRGB;
+            obj = obj@SConePsychophysics.Cyclers.Cycler(hardwareParameters, stimulusParameters, stimulusComponents);
+            
+            obj.ComputeShapeRectangles();
+            obj.factorInSine = 2 * pi * obj.stimulusParameters.frequency;
+            obj.modulationAmplitude = obj.stimulusParameters.peakIntensity - obj.stimulusParameters.backgroundIntensity;
         end
+ 
+% N
+%         function obj = Oscillator(hardwareParameters, stimulusParameters, stimulusComponents)
+%            obj = obj@SConePsychophysics.Cyclers.Cycler(hardwareParameters, stimulusParameters, stimulusComponents);
+%            
+%            obj.ComputeShapeRectangles();
+%            obj.factorsInSine = 2 * pi * obj.stimulusParameters.frequenciesRGB;
+%            obj.modulationAmplitudeRGB = ...
+%                obj.stimulusParameters.peakIntensityRGB - obj.stimulusParameters.backgroundIntensityRGB;
+%         end
         
         function ComputeShapeRectangles(obj)
             hwParams = obj.hardwareParameters;
@@ -92,19 +92,15 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
         end
         
         function shapeColor = CalculateShapeColor(obj, frameTime)
-           shapeColor = obj.stimulusParameters.backgroundIntensityRGB + obj.modulationAmplitudeRGB .* ...
-               sin(obj.factorsInSine * frameTime + obj.currPhaseOffsets);
+            shapeColor = obj.stimulusParameters.backgroundIntensity + obj.modulationAmplitude * ...
+                arrayfun(@(x) sin(obj.factorInSine * frameTime + x), obj.currPhaseOffsets);
         end
-        
-        function results = CompileResults(obj)
-            results = SConePsychophysics.Utils.Results();
-            offsetInRadians = obj.currOffset * obj.stimulusParameters.offsetStepSize;
-            offsetInSeconds = (offsetInRadians/ (2 * pi)) / obj.stimulusParameters.frequencyB;
-            results.Add('s cone offset in radians', offsetInRadians);
-            results.Add('blue channel frequency', obj.stimulusParameters.frequency);
-            results.Add('offset in seconds', offsetInSeconds);
-            results.Add('offset in milliseconds',1000 * offsetInSeconds);
-        end
+
+% NEW VERSION
+%         function shapeColor = CalculateShapeColor(obj, frameTime)
+%            shapeColor = obj.stimulusParameters.backgroundIntensityRGB + obj.modulationAmplitudeRGB * ...
+%                sin(obj.factorsInSine * frameTime + obj.currFrameOffsets);
+%         end
         
         function value = get.currPhaseOffsets(obj)
             value = [0 0 obj.stimulusComponents(obj.currOffset)];

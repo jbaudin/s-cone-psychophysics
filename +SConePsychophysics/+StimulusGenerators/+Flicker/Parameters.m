@@ -1,9 +1,17 @@
 classdef Parameters < SConePsychophysics.Utils.Parameters
     properties
-        backgroundIntensity % will define the
-        peakIntensity
+        backgroundIntensityR % will define the
+        peakIntensityR
         
-        frequency % in Hz
+        backgroundIntensityG % will define the
+        peakIntensityG
+        
+        backgroundIntensityB % will define the
+        peakIntensityB
+        
+        frequencyR % in Hz
+        frequencyG % in Hz
+        frequencyB % in Hz
         
         offsetStepSize % in radians
         maxOffset % in radians
@@ -15,24 +23,63 @@ classdef Parameters < SConePsychophysics.Utils.Parameters
     properties (Dependent)
         backgroundIntensity8Bit
         peakIntensity8Bit
+        
+        backgroundIntensityRGB
+        peakIntensityRGB
+        frequenciesRGB
     end
     
     methods
-        function value = get.backgroundIntensity8Bit(obj)
-            value = round(obj.backgroundIntensity * 255);
+        function value = get.backgroundIntensityRGB(obj)
+            value = [obj.backgroundIntensityR obj.backgroundIntensityG obj.backgroundIntensityB];
         end
         
-        function value = get.peakIntensity8Bit(obj)
-            value = round(obj.peakIntensity * 255);
+        function value = get.peakIntensityRGB(obj)
+            value = [obj.peakIntensityR obj.peakIntensityG obj.peakIntensityB];
+        end
+        
+        function value = get.frequenciesRGB(obj)
+            value = [obj.frequencyR obj.frequencyG obj.frequencyB];
         end
     end
     
     methods (Static)
         function parameters = DebugExample()
             parameters = SConePsychophysics.StimulusGenerators.Flicker.Parameters();
-            parameters.backgroundIntensity = 128;
-            parameters.peakIntensity = 255;
-            parameters.frequency = 1;
+            parameters.backgroundIntensityR = 128;
+            parameters.peakIntensityR = 255;
+            
+            parameters.backgroundIntensityG = 128;
+            parameters.peakIntensityG = 255;
+            
+            parameters.backgroundIntensityB = 128;
+            parameters.peakIntensityB = 255;
+            
+            parameters.frequencyR = 1;
+            parameters.frequencyG = 1;
+            parameters.frequencyB = 1;
+            
+            parameters.offsetStepSize = 0.1;
+            parameters.maxOffset = 3;
+            parameters.minOffset = -3;
+            parameters.radius = 100;
+        end
+        
+        function parameters = StockmanExample()
+            parameters = SConePsychophysics.StimulusGenerators.Flicker.Parameters();
+            parameters.backgroundIntensityR = 128;
+            parameters.peakIntensityR = 255;
+            
+            parameters.backgroundIntensityG = 128;
+            parameters.peakIntensityG = 255;
+            
+            parameters.backgroundIntensityB = 128;
+            parameters.peakIntensityB = 255;
+            
+            parameters.frequencyR = 10;
+            parameters.frequencyG = 10;
+            parameters.frequencyB = 9;
+            
             parameters.offsetStepSize = 0.1;
             parameters.maxOffset = 3;
             parameters.minOffset = -3;

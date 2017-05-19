@@ -17,7 +17,7 @@ classdef Spinner < SConePsychophysics.Cyclers.Cycler
     methods
         function obj = Spinner(hardwareParameters, stimulusParameters, stimulusComponents)
             obj = obj@SConePsychophysics.Cyclers.Cycler(hardwareParameters, stimulusParameters, stimulusComponents);
-
+            
             obj.ComputeTextureRectangles();
             obj.rotationPeriod = 1 / obj.stimulusParameters.frequency;
             obj.UpdateTexture();
@@ -83,6 +83,16 @@ classdef Spinner < SConePsychophysics.Cyclers.Cycler
         function DecrementOffset(obj)
             DecrementOffset@SConePsychophysics.Cyclers.Cycler(obj);
             obj.UpdateTexture();
+        end
+        
+        function results = CompileResults(obj)
+            results = SConePsychophysics.Utils.Results();
+            offsetInRadians = obj.currOffset * obj.stimulusParameters.offsetStepSize;
+            offsetInSeconds = (offsetInRadians/ (2 * pi)) / obj.stimulusParameters.frequency;
+            results.Add('offset in radians', offsetInRadians);
+            results.Add('frequency', obj.stimulusParameters.frequency);
+            results.Add('offset in seconds', offsetInSeconds);
+            results.Add('offset in milliseconds',1000 * offsetInSeconds);
         end
         
         function value = get.currFrame(obj)
