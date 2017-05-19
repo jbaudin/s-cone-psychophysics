@@ -36,11 +36,15 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
             stimulusRectangle = obj.DetermineStimulusRectangle();
             
             if obj.hardwareParameters.renderInQuadrants
-                screenRectangles = {[0 0 hwParams.frameWidth hwParams.frameHeight], ...
-                    [(hwParams.frameWidth + 1) 0 hwParams.frameWidth hwParams.frameHeight], ... 
-                    [0 (hwParams.frameHeigt + 1) hwParams.frameWidth hwParams.frameHeight], ...
-                    [(hwParams.frameWidth + 1) (hwParams.frameHeight + 1) hwParams.frameWidth hwParams.frameHeight]};
-                obj.shapeRectangles = cellfun(@(x) CenterRect(stimulusRectangle, x), screenRectangles, ...
+                width = hwParams.width;
+                height = hwParams.height;
+                
+                baseRectangle = CenterRectOnPoint(obj.DetermineStimulusRectangle(), width / 4, height / 4);
+                obj.shapeRectangles = cellfun(@(x) baseRectangle + x, ...
+                    {[0 0 0 0], ...
+                    [(width / 2) 0 (width / 2) 0], ...
+                    [0 (height / 2) 0 (height / 2)], ...
+                    [(width / 2) (height / 2) (width / 2) (height / 2)]}, ...
                     'UniformOutput', false);
             else
                 screenRectangle = [0 0 hwParams.frameWidth hwParams.frameHeight];
@@ -52,7 +56,7 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
             frameTimes = obj.CalculateQuadrantFrameTimes(frameTime);
             shapeColors = obj.CalculateShapeColors(frameTimes);
             for i = 1:4
-                obj.DrawTexture(obj.shapeRectangles{i}, shapeColors{i})
+                obj.DrawShape(obj.shapeRectangles{i}, shapeColors{i})
             end
         end
         

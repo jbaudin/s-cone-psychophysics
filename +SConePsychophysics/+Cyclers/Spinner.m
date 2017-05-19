@@ -6,7 +6,7 @@ classdef Spinner < SConePsychophysics.Cyclers.Cycler
     %       - frequency
     properties
         rotationPeriod
-        textureCenters
+        textureRectangles
         currTexture
     end
     
@@ -18,27 +18,26 @@ classdef Spinner < SConePsychophysics.Cyclers.Cycler
         function obj = Spinner(hardwareParameters, stimulusParameters, stimulusComponents)
             obj = obj@SConePsychophysics.Cyclers.Cycler(hardwareParameters, stimulusParameters, stimulusComponents);
 
-            obj.ComputeTextureCentersCenterOffsets();
+            obj.ComputeTextureRectangles();
             obj.rotationPeriod = 1 / obj.stimulusParameters.frequency;
             obj.UpdateTexture();
         end
         
-        function ComputeTextureCentersCenterOffsets(obj)
+        function ComputeTextureRectangles(obj)
             width = obj.hardwareParameters.width;
             height = obj.hardwareParameters.height;
             
             if obj.hardwareParameters.renderInQuadrants
-                baseCenter = CenterRectOnPoint( ...
-                    obj.DetermineStimulusRectangle(), ...
-                    obj.hardwareParameters.width / 4, obj.hardwareParameters.height / 4);
-                obj.textureCenters = cellfun(@(x) baseCenter + x, ...
+                baseRectangle = CenterRectOnPoint( ...
+                    obj.DetermineStimulusRectangle(), width / 4, height / 4);
+                obj.textureRectangles = cellfun(@(x) baseRectangle + x, ...
                     {[0 0 0 0], ...
                     [(width / 2) 0 (width / 2) 0], ...
                     [0 (height / 2) 0 (height / 2)], ...
                     [(width / 2) (height / 2) (width / 2) (height / 2)]}, ...
                     'UniformOutput', false);
             else
-                obj.textureCenters = CenterRectOnPoint( ...
+                obj.textureRectangles = CenterRectOnPoint( ...
                     obj.DetermineStimulusRectangle(), ...
                     obj.hardwareParameters.width / 2, obj.hardwareParameters.height / 2);
             end
@@ -49,13 +48,13 @@ classdef Spinner < SConePsychophysics.Cyclers.Cycler
             frameTimes = obj.CalculateQuadrantFrameTimes(frameTime);
             rotations = obj.CalculateTextureRotations(frameTimes);
             for i = 1:4
-                obj.DrawTexture(obj.textureCenters{i}, rotations(i));
+                obj.DrawTexture(obj.textureRectangles{i}, rotations(i));
             end
         end
         
         function DrawTextureEntireScreen(obj, frameTime)
             rotation = obj.CalculateTextureRotations(frameTime);
-            obj.DrawTexture(obj.textureCenters, rotation);
+            obj.DrawTexture(obj.textureRectangles, rotation);
         end
         
         function DrawTexture(obj, center, rotation)
@@ -88,7 +87,6 @@ classdef Spinner < SConePsychophysics.Cyclers.Cycler
         
         function value = get.currFrame(obj)
             value = obj.stimulusComponents(obj.currOffset);
-            disp(max(value(:)));
         end
     end
 end
