@@ -3,6 +3,8 @@ function Main(stimulusParameters, generator, savePath, varargin)
 ip = inputParser();
 ip.addOptional('DebugMode', false, @(x) islogical(x));
 ip.addOptional('DebugModeScreen', 0, @(x) isnumeric(x) && numel(x) == 1 && x>= 0 && x == round(x));
+ip.addOptional('DebugModeFullscreen', false, @(x) islogical(x));
+ip.addOptional('DebugModeScreenRectangle', [0 0 640 480], @(x) isnumeric(x) && numel(x) == 4 && all(x >= 0)); 
 ip.addOptional('RenderInQuadrants', true, @(x) islogical(x));
 isPositiveNumber = @(x) isnumeric(x) && numel(x) == 1 && x > 0;
 ip.addOptional('KeyboardCheckInterval', 0.250, isPositiveNumber); % in seconds
@@ -16,7 +18,10 @@ SConePsychophysics.Utils.Initialization.Datapixx(hardwareParameters, ...
     'DebugMode', ip.Results.DebugMode, 'RenderInQuadrants', ip.Results.RenderInQuadrants);
 SConePsychophysics.Utils.Initialization.PsychImaging();
 SConePsychophysics.Utils.Initialization.Window(hardwareParameters, ...
-    'DebugMode', ip.Results.DebugMode, 'DebugModeScreen', ip.Results.DebugModeScreen);
+    'DebugMode', ip.Results.DebugMode, ...
+    'DebugModeScreen', ip.Results.DebugModeScreen, ...
+    'DebugModeFullscreen', ip.Results.DebugModeFullscreen, ...
+    'DebugModeScreenRectangle', ip.Results.DebugModeScreenRectangle);
 
 % create the stimuli, stimulus generator will return the appropriate cycler
 cycler = generator(stimulusParameters, hardwareParameters);
