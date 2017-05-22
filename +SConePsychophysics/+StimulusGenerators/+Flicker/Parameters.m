@@ -52,11 +52,11 @@ classdef Parameters < SConePsychophysics.Utils.Parameters
             parameters.backgroundIntensityB = 128;
             parameters.peakIntensityB = 255;
             
-            parameters.frequencyR = 1;
-            parameters.frequencyG = 1;
-            parameters.frequencyB = 1;
+            parameters.frequencyR = 8;
+            parameters.frequencyG = 8;
+            parameters.frequencyB = 8;
             
-            parameters.offsetStepSize = 0.1;
+            parameters.offsetStepSize = 0.01;
             parameters.maxOffset = 3;
             parameters.minOffset = -3;
             parameters.radius = 100;
@@ -77,7 +77,7 @@ classdef Parameters < SConePsychophysics.Utils.Parameters
             parameters.frequencyG = 40;
             parameters.frequencyB = 40.5;
             
-            parameters.offsetStepSize = 0.1;
+            parameters.offsetStepSize = 0.01;
             parameters.maxOffset = 3;
             parameters.minOffset = -3;
             parameters.radius = 100;

@@ -8,8 +8,7 @@ s = '/Users/psycho/Desktop/SlaveCode/Jacob/results/benhams-top';
 SConePsychophysics.Main(p, g, sess, s);
  
 %% Flicker (with wrapper / parameter builder)
-b =  SConePsychophysics.StimulusGenerators.Flicker.SameFrequencyFlickerParameters.DebugExample();
-p = b.Build( ); 
+p =  SConePsychophysics.StimulusGenerators.Flicker.Parameters.DebugExample();
 g = @SConePsychophysics.StimulusGenerators.Flicker.Generate;
 s = '/Users/psycho/Desktop/SlaveCode/Jacob/results/flicker';
 SConePsychophysics.Main(p, g, sess, s);

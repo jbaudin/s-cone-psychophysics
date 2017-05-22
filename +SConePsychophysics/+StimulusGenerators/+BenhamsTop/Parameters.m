@@ -24,10 +24,10 @@ classdef Parameters < SConePsychophysics.Utils.Parameters
             parameters.backgroundIntensity = 0.8;
             parameters.darkIntensity = 0;
             parameters.frequency = 1;
-            parameters.offsetStepSize = 0.1;
-            parameters.maxOffset = 3;
-            parameters.minOffset = -3;
-            parameters.radius = 200;
+            parameters.offsetStepSize = 0.01;
+            parameters.maxOffset = 0.3;
+            parameters.minOffset = -0.3;
+            parameters.radius = 100;
             parameters.numArcGroups = 3;
             parameters.numArcsInGroups = [4 3 3];
             parameters.arcGroupThetas = {[0 pi / 3], [(pi / 3) (2 * pi / 3)], [(2 * pi / 3) pi]};
