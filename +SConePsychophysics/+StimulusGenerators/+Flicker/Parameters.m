@@ -73,9 +73,9 @@ classdef Parameters < SConePsychophysics.Utils.Parameters
             parameters.backgroundIntensityB = 128;
             parameters.peakIntensityB = 255;
             
-            parameters.frequencyR = 10;
-            parameters.frequencyG = 10;
-            parameters.frequencyB = 9;
+            parameters.frequencyR = 40;
+            parameters.frequencyG = 40;
+            parameters.frequencyB = 40.5;
             
             parameters.offsetStepSize = 0.1;
             parameters.maxOffset = 3;

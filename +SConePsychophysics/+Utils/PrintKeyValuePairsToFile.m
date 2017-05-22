@@ -1,7 +1,7 @@
 function PrintKeyValuePairsToFile(fileID, keys, valueGetFxn, varargin)
 ip = inputParser();
-ip.addParameter('Title', '', @(x) isempty(x) || ischar(x));
-ip.addParameter('AddDate', false, @(x) islogical(x));
+ip.addOptional('Title', '', @(x) isempty(x) || ischar(x));
+ip.addOptional('AddDate', false, @(x) islogical(x));
 ip.parse(varargin{:});
 
 if ~isempty(ip.Results.Title)
@@ -9,7 +9,7 @@ if ~isempty(ip.Results.Title)
 end
 
 if ip.Results.AddDate
-    fprintf(fileID, 'Date: %s\n', char(datetime()));
+    fprintf(fileID, 'Date: %s\n', date);
 end
 
 for i = 1:numel(keys)
