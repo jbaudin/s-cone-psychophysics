@@ -2,8 +2,8 @@ function Main(stimulusParameters, generator, session, savePath, varargin)
 % parse the inputs
 ip = inputParser();
 isPositiveNumber = @(x) isnumeric(x) && numel(x) == 1 && x > 0;
-ip.addParameter('KeyboardCheckInterval', 0.250, isPositiveNumber); % in seconds
-ip.addParameter('MaxRunTime', 60, @(x) @(x) isnumeric(x) && numel(x) == 1 && x > 0); % in seconds
+ip.addOptional('KeyboardCheckInterval', 0.250, isPositiveNumber); % in seconds
+ip.addOptional('MaxRunTime', 60, @(x) @(x) isnumeric(x) && numel(x) == 1 && x > 0); % in seconds
 ip.parse(varargin{:});
 
 % create the stimuli, stimulus generator will return the appropriate cycler

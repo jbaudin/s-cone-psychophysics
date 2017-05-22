@@ -6,13 +6,13 @@ classdef PsychtoolboxSession < handle
     methods
         function obj = PsychtoolboxSession(varargin)
             ip = inputParser();
-            ip.addParameter('SpecifyScreen', false, @(x) islogical(x));
-            ip.addParameter('Screen', 0, @(x) isnumeric(x) && numel(x) == 1 && x>= 0 && x == round(x));
-            ip.addParameter('DebugMode', false, @(x) islogical(x));
-            ip.addParameter('DebugModeFullscreen', false, @(x) islogical(x));
-            ip.addParameter('DebugModeScreenRectangle', [0 0 640 480], @(x) isnumeric(x) && numel(x) == 4 && all(x >= 0));
-            ip.addParameter('RenderInQuadrants', true, @(x) islogical(x));
-            ip.addParameter('BackgroundIntensity', SConePsychophysics.Constants.BACKGROUND_INTENSITY, ...
+            ip.addOptional('SpecifyScreen', false, @(x) islogical(x));
+            ip.addOptional('Screen', 0, @(x) isnumeric(x) && numel(x) == 1 && x>= 0 && x == round(x));
+            ip.addOptional('DebugMode', false, @(x) islogical(x));
+            ip.addOptional('DebugModeFullscreen', false, @(x) islogical(x));
+            ip.addOptional('DebugModeScreenRectangle', [0 0 640 480], @(x) isnumeric(x) && numel(x) == 4 && all(x >= 0));
+            ip.addOptional('RenderInQuadrants', true, @(x) islogical(x));
+            ip.addOptional('BackgroundIntensity', SConePsychophysics.Constants.BACKGROUND_INTENSITY, ...
                 @(x) isnumeric(x) && all(x <= 1 & x >= 0));
             ip.parse(varargin{:});
             
