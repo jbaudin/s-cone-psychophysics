@@ -20,10 +20,7 @@ classdef Parameters < SConePsychophysics.Utils.Parameters
         radius % in pixels???
     end
     
-    properties (Dependent)
-        backgroundIntensity8Bit
-        peakIntensity8Bit
-        
+    properties (Dependent)       
         backgroundIntensityRGB
         peakIntensityRGB
         frequenciesRGB

@@ -1,7 +1,7 @@
 function PrintKeyValuePairsToFile(fileID, keys, valueGetFxn, varargin)
 ip = inputParser();
-ip.addOptional('Title', '');
-ip.addOptional('AddDate', false);
+ip.addParameter('Title', '', @(x) isempty(x) || ischar(x));
+ip.addParameter('AddDate', false, @(x) islogical(x));
 ip.parse(varargin{:});
 
 if ~isempty(ip.Results.Title)

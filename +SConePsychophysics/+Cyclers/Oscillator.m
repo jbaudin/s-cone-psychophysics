@@ -101,7 +101,7 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
             offsetInRadians = obj.currOffset * obj.stimulusParameters.offsetStepSize;
             offsetInSeconds = (offsetInRadians/ (2 * pi)) / obj.stimulusParameters.frequencyB;
             results.Add('s cone offset in radians', offsetInRadians);
-            results.Add('blue channel frequency', obj.stimulusParameters.frequency);
+            results.Add('blue channel frequency', obj.stimulusParameters.frequencyB);
             results.Add('offset in seconds', offsetInSeconds);
             results.Add('offset in milliseconds',1000 * offsetInSeconds);
         end

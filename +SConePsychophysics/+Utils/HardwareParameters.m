@@ -5,6 +5,7 @@ classdef HardwareParameters < SConePsychophysics.Utils.Parameters
         height
         frameDuration
         renderInQuadrants % boolean
+        backgroundIntensity
     end
     
     properties (Dependent)

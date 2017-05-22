@@ -1,24 +1,24 @@
-%% Benham's Top
+% % Benham's Top
+clear all;
 clc;
+sess = SConePsychophysics.PsychtoolboxSession('DebugMode', true, 'DebugModeFullScreen',  true,'RenderInQuadrants', true);
 p = SConePsychophysics.StimulusGenerators.BenhamsTop.Parameters.DebugExample();
-g = @SConePsychophysics.StimulusGenerators.BenhamsTop.Generate;
-s = '/Users/jacobbaudin/Desktop/results';
-SConePsychophysics.Main(p, g, s, 'DebugMode', true, 'RenderInQuadrants', true);
-
+g = @SConePsychophysics.StimulusGenerators.BenhamsTop.Generate;  
+s = '/Users/jacobbaudin/Desktop/results'; 
+SConePsychophysics.Main(p, g, sess, s);
+ 
 %% Flicker (with wrapper / parameter builder)
-clc;
 b =  SConePsychophysics.StimulusGenerators.Flicker.SameFrequencyFlickerParameters.DebugExample();
-p = b.Build();
+p = b.Build( ); 
 g = @SConePsychophysics.StimulusGenerators.Flicker.Generate;
-s = '/Users/jacobbaudin/Desktop/results';
-SConePsychophysics.Main(p, g, s, 'DebugMode', true, 'RenderInQuadrants', true);
+s =   '/Users/jacobbaudin/Desktop/results';
+SConePsychophysics.Main(p, g, sess, s);
 
 %% Stockman
-clc;
 p =  SConePsychophysics.StimulusGenerators.Flicker.Parameters.StockmanExample();
-g = @SConePsychophysics.StimulusGenerators.Flicker.Generate;
+g = @SConePsychophysics.StimulusGenerators.Flicker.Generate; 
 s = '/Users/jacobbaudin/Desktop/results';
-SConePsychophysics.Main(p, g, s, 'DebugMode', true, 'RenderInQuadrants', true);
+SConePsychophysics.Main(p, g, sess, s);
 
 %%
 Screen('CloseAll');  
