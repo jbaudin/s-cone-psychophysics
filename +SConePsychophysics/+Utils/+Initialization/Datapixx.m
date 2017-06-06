@@ -1,17 +1,10 @@
-function Datapixx(hardwareParameters, varargin)
-ip = inputParser();
-ip.addOptional('DebugMode', false, @(x) islogical(x));
-ip.addOptional('RenderInQuadrants', true, @(x) islogical(x));
-ip.parse(varargin{:});
+% This function starts a session with the Datapixx projector
+% 
+% inputs:
+%       hardwareParameters: a HardwareParameters object; this is where all
+%       of the relevant parameters
 
-% add rendering mode to hardwareParameters
-hardwareParameters.renderInQuadrants = ip.Results.RenderInQuadrants;
-
-% if debugging, short circuit this and don't load Datapixx
-if ip.Results.DebugMode
-    return;
-end
-
+function Datapixx(hardwareParameters)
 % open Datapixx
 Datapixx('Open');
 
@@ -19,7 +12,7 @@ Datapixx('Open');
 %    0 for normal
 %    2 for 480 Hz where each quadrant of the image is a frame
 %    5 for 1440 Hz where each color channel of each quadrant is a frame
-if ip.Results.RenderInQuadrants
+if hardwareParameters.RenderInQuadrants
     propixxMode = 2;
 else
     propixxMode = 0;

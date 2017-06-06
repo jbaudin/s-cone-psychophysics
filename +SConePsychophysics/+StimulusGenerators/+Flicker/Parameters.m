@@ -1,86 +1,81 @@
 classdef Parameters < SConePsychophysics.Utils.Parameters
     properties
-        backgroundIntensityR % will define the
-        peakIntensityR
+        % intensity of background, a 3 element vector, one for each
+        % stimulus dimension
+        backgroundIntensities
+        % max intensity of oscillation peaks, one for each stimulus
+        % dimension
+        peakIntensities
         
-        backgroundIntensityG % will define the
-        peakIntensityG
+        % frequencies of oscillation, one for each stimulus dimension
+        frequencies
         
-        backgroundIntensityB % will define the
-        peakIntensityB
+        % step size for when the offset is incremented/decememented (in
+        % radians)
+        offsetStepSize
+        % max and min allowable offsets (in radians)
+        maxOffset
+        minOffset
         
-        frequencyR % in Hz
-        frequencyG % in Hz
-        frequencyB % in Hz
+        % radius of the disc (in pixels)
+        radius
         
-        offsetStepSize % in radians
-        maxOffset % in radians
-        minOffset % in radians
-        
-        radius % in pixels???
+        % the color space in which the stimulus is specified (must be one
+        % of the color spaces defined in the SConePsychophysics.Constants
+        % file, such as SConePsychophysics.Constants.COLOR_SPACE_RGB)
+        colorSpace
     end
     
-    properties (Dependent)       
-        backgroundIntensityRGB
-        peakIntensityRGB
-        frequenciesRGB
+    properties (Dependent)
+        % matrix that transforms from stimulus space to monitor space
+        % (doesn't need to be specified because it can be determined based
+        % on the value of colorSpace)
+        stimulusSpaceToMonitorSpaceMatrix
+        % the background intensity value in monitor space (calculated using
+        % the transformation matrix)
+        backgroundIntensityMonitorSpace
     end
     
+    % methods to compute the dependent properties
     methods
-        function value = get.backgroundIntensityRGB(obj)
-            value = [obj.backgroundIntensityR obj.backgroundIntensityG obj.backgroundIntensityB];
+        function value = get.stimulusSpaceToMonitorSpaceMatrix(obj)
+            value = SConePsychophysics.Constants.COLOR_SPACE_PROJECTION_MATRICES(obj.colorSpace);
         end
         
-        function value = get.peakIntensityRGB(obj)
-            value = [obj.peakIntensityR obj.peakIntensityG obj.peakIntensityB];
-        end
-        
-        function value = get.frequenciesRGB(obj)
-            value = [obj.frequencyR obj.frequencyG obj.frequencyB];
+        function value = get.backgroundIntensityMonitorSpace(obj)
+            value = obj.stimulusSpaceToMonitorSpaceMatrix * reshape(obj.backgroundIntensities, [3 1]);
         end
     end
     
+    % some static methods that provide examples of how to define parameter
+    % sets
     methods (Static)
         function parameters = DebugExample()
             parameters = SConePsychophysics.StimulusGenerators.Flicker.Parameters();
-            parameters.backgroundIntensityR = 128;
-            parameters.peakIntensityR = 255;
+            parameters.backgroundIntensities = [0.5 0.5 0.5];
+            parameters.peakIntensities = [1 1 1];
+            parameters.frequencies = [8 8 8];
             
-            parameters.backgroundIntensityG = 128;
-            parameters.peakIntensityG = 255;
-            
-            parameters.backgroundIntensityB = 128;
-            parameters.peakIntensityB = 255;
-            
-            parameters.frequencyR = 8;
-            parameters.frequencyG = 8;
-            parameters.frequencyB = 8;
-            
-            parameters.offsetStepSize = 0.01;
+            parameters.offsetStepSize = 0.1;
             parameters.maxOffset = 3;
             parameters.minOffset = -3;
             parameters.radius = 100;
+            
+            parameters.colorSpace = SConePsychophysics.Constants.COLOR_SPACE_LMS;
         end
         
         function parameters = StockmanExample()
             parameters = SConePsychophysics.StimulusGenerators.Flicker.Parameters();
-            parameters.backgroundIntensityR = 128;
-            parameters.peakIntensityR = 255;
+            parameters.backgroundIntensities = [0.5 0.5 0.5];
+            parameters.peakIntensities = [1 1 1];
+            parameters.frequencies = [40 40 40.5];
             
-            parameters.backgroundIntensityG = 128;
-            parameters.peakIntensityG = 255;
-            
-            parameters.backgroundIntensityB = 128;
-            parameters.peakIntensityB = 255;
-            
-            parameters.frequencyR = 40;
-            parameters.frequencyG = 40;
-            parameters.frequencyB = 40.5;
-            
-            parameters.offsetStepSize = 0.01;
+            parameters.offsetStepSize = 0.1;
             parameters.maxOffset = 3;
             parameters.minOffset = -3;
             parameters.radius = 100;
+            
+            parameters.colorSpace = SConePsychophysics.Constants.COLOR_SPACE_LMS;
         end
     end
 end

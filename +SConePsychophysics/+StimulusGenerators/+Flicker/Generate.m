@@ -3,15 +3,17 @@
 % of offset step position to actual offsets in radians)
 function cycler = Generate(stimulusParameters, hardwareParameters)
 
-% figure out constraints on offset step sizes
-maxOffsetStepNum = floor(stimulusParameters.maxOffset / stimulusParameters.offsetStepSize);
-minOffsetStepNum = ceil(stimulusParameters.minOffset / stimulusParameters.offsetStepSize);
+% because stimuli are not required to be specified in RGB space, the
+% parameters must first be checked to see if they will result in any
+% stimuli that are outside of the range of the monitor, perform that check
+% here (it will throw and error and close Psychtoolbox screen if out of
+% range).
+SConePsychophysics.StimulusGenerators.Flicker.Util.CheckStimulusInMonitorRange(stimulusParameters, hardwareParameters);
 
-% make an array of offset steps (these will be the containers.Map keys)
-offsetSteps = (minOffsetStepNum:maxOffsetStepNum);
-
-% multiply that array by the step size to get an array of offset sizes
-offsetSizes = offsetSteps * stimulusParameters.offsetStepSize;
+% generate an array of offset steps (integers that identify the given step
+% number) and an array of offset sizes (the actual time offset of those
+% steps)
+[offsetSteps, offsetSizes] = SConePsychophysics.StimulusGenerators.Flicker.Util.GenerateOffsets(stimulusParameters);
 
 % make these into a lookup for the cycler
 offsetLookup = containers.Map(num2cell(offsetSteps), num2cell(offsetSizes));

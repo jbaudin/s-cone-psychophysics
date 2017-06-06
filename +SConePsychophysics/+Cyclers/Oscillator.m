@@ -1,28 +1,18 @@
-%TODO: to make this generalizable to the Stocman '93 experiment, take the
-%following steps:
-%       - require that the stimulusParameters have an peak and a mean
-%       intensity for all 3 monitor channels
-%       - allow for the specification of frequencies of modulation for all
-%       3 monitor channels
-%       - the stimulusComponents lookup needs to return relative phases for
-%       all 3 of the stimuli (maybe still just the advance for blue?)
+% A cycler subclass that oscillates the different stimulus channels within
+% a circular disc and allows for the modulation of the phase offset of the
+% 3rd channel.  This is useful for implementing stimuli such as in the
+% Stockman, 1993 beat frequency experiment.
 
-classdef Oscillator < SConePsychophysics.Cyclers.Cycler
-    % this cycler requires stimulus components as follows:
-    % stimulus components will be a matrix that will define
-    % the stimulus to show - each of them will be scaled by a sinusoid for
-    % each frame generation
-    
-    % require stimulus parameters:
-    %       - step size: in units of seconds - defines the incremental
-    %       steps used to advance the s cone signal ahead of the others
-    %       - frequency - this will be the frequency of the oscillating
-    %       stimulus
-    
+% The Cycler parent class defines a stimulusComponents property.  For this
+% subclass, this needs to be a map where the keys are offsets and the
+% values are the size of the 3rd channel phase offset (in radians) for that
+% given offset
+
+classdef Oscillator < SConePsychophysics.Cyclers.Cycler    
     properties
         factorsInSine
         shapeRectangles
-        modulationAmplitudeRGB
+        modulationAmplitudes
     end
     
     properties (Dependent)
@@ -31,24 +21,21 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
     end
     
     methods
-%         function obj = Oscillator(hardwareParameters, stimulusParameters, stimulusComponents)
-%             obj = obj@SConePsychophysics.Cyclers.Cycler(hardwareParameters, stimulusParameters, stimulusComponents);
-%             
-%             obj.ComputeShapeRectangles();
-%             obj.factorInSine = 2 * pi * obj.stimulusParameters.frequency;
-%             obj.modulationAmplitude = obj.stimulusParameters.peakIntensity - obj.stimulusParameters.backgroundIntensity;
-%         end
- 
-% NEW VERSION
         function obj = Oscillator(hardwareParameters, stimulusParameters, stimulusComponents)
+            % call superclass constructor
            obj = obj@SConePsychophysics.Cyclers.Cycler(hardwareParameters, stimulusParameters, stimulusComponents);
            
+           % compute some values that will be used during stimulus
+           % construction
            obj.ComputeShapeRectangles();
-           obj.factorsInSine = 2 * pi * obj.stimulusParameters.frequenciesRGB;
-           obj.modulationAmplitudeRGB = ...
-               obj.stimulusParameters.peakIntensityRGB - obj.stimulusParameters.backgroundIntensityRGB;
+           obj.factorsInSine = 2 * pi * obj.stimulusParameters.frequencies;
+           obj.modulationAmplitudes = ...
+               obj.stimulusParameters.peakIntensities - obj.stimulusParameters.backgroundIntensities;
         end
         
+        % calculate the rectangles in which the circular disc will be
+        % displayed (this varies based on whether or not frames are being
+        % rendered in quadrants)
         function ComputeShapeRectangles(obj)
             hwParams = obj.hardwareParameters;
 
@@ -71,7 +58,9 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
             end
         end
         
-        function DrawTextureInQuadrants(obj, frameTime)
+        % draw in each of the four quadrants (each one displaying a frame
+        % advanced by 1/4 of the frame period relative to the last one)
+        function DrawInQuadrants(obj, frameTime)
             frameTimes = obj.CalculateQuadrantFrameTimes(frameTime);
             shapeColors = obj.CalculateShapeColors(frameTimes);
             for i = 1:4
@@ -79,33 +68,46 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
             end
         end
         
-        function DrawTextureEntireScreen(obj, frameTime)
+        % draw one single frame in the center of the screen
+        function DrawEntireScreen(obj, frameTime)
             obj.DrawShape(obj.shapeRectangles, obj.CalculateShapeColor(frameTime));
         end
         
+        % draw a disc in the specified rectangle with the specified color
         function DrawShape(obj, rectangle, shapeColor)
             Screen('FillOval', obj.hardwareParameters.window, shapeColor, rectangle);
         end
         
+        % get the color of multiple discs at the specified frame times,
+        % return a cell array of shape colors
         function shapeColors = CalculateShapeColors(obj, frameTimes)
             shapeColors = arrayfun(@(x) obj.CalculateShapeColor(x), frameTimes, 'UniformOutput', false);
         end
         
-        function shapeColor = CalculateShapeColor(obj, frameTime)
-           shapeColor = obj.stimulusParameters.backgroundIntensityRGB + obj.modulationAmplitudeRGB .* ...
+        % calculate the color of a single disc in RGB space
+        function shapeColorRGBSpace = CalculateShapeColor(obj, frameTime)
+           shapeColorStimulusSpace = obj.stimulusParameters.backgroundIntensities + obj.modulationAmplitudes .* ...
                sin(obj.factorsInSine * frameTime + obj.currPhaseOffsets);
+           shapeColorRGBSpace = ...
+               SConePsychophysics.Constants.COLOR_SPACE_PROJECTION_MATRICES(obj.stimulusParameters.colorSpace) ...
+               * shapeColorStimulusSpace';
+           shapeColorRGBSpace = shapeColorRGBSpace';
         end
         
+        % once the cycler is done cycling, this method can be called to
+        % compile the results; it can also be modified to change which
+        % results are compiled
         function results = CompileResults(obj)
             results = SConePsychophysics.Utils.Results();
             offsetInRadians = obj.currOffset * obj.stimulusParameters.offsetStepSize;
-            offsetInSeconds = (offsetInRadians/ (2 * pi)) / obj.stimulusParameters.frequencyB;
+            offsetInSeconds = (offsetInRadians/ (2 * pi)) / obj.stimulusParameters.frequencies(3);
             results.Add('s cone offset in radians', offsetInRadians);
-            results.Add('blue channel frequency', obj.stimulusParameters.frequencyB);
+            results.Add('blue channel frequency', obj.stimulusParameters.frequencies(3));
             results.Add('offset in seconds', offsetInSeconds);
             results.Add('offset in milliseconds',1000 * offsetInSeconds);
         end
         
+        % return a 3 element vector of phase offsets, one for each channel
         function value = get.currPhaseOffsets(obj)
             value = [0 0 obj.stimulusComponents(obj.currOffset)];
         end

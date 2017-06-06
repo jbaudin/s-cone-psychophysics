@@ -1,7 +1,33 @@
+% Generates a cycler for a Benham's top experiment.
+%
+% inputs:
+%       stimulusParameters: stimulus parameters object that contains all of
+%               the information necessary to completely specify the
+%               stimulus
+%       hardwareParameters: hardware parameters object that contains
+%               information about the current hardware configuration
+%       varargin: optional Name/Value inputs:
+%           'ReturnOnlyFrameData': boolean, if true the function will
+%                   return the frame data instead of a cycler
+%
+% returns:
+%       output: a Spinner (a Cycler subclass) object that can be used to
+%               run an experiment using the stimulus specified by the
+%               values in stimulusParameters and hardwareParameters
+
 function output = Generate(stimulusParameters, hardwareParameters, varargin)
 ip = inputParser();
-ip.addOptional('ReturnOnlyFrameData', false, @(x) islogical(x)); % a flag for debugging
+% a flag for debugging; if true, instead of a cycler, the output will be
+% the frames to be displayed
+ip.addOptional('ReturnOnlyFrameData', false, @(x) islogical(x));
 ip.parse(varargin{:});
+
+% because stimuli are not required to be specified in RGB space, the
+% parameters must first be checked to see if they will result in any
+% stimuli that are outside of the range of the monitor, perform that check
+% here (it will throw and error and close Psychtoolbox screen if out of
+% range).
+SConePsychophysics.StimulusGenerators.BenhamsTop.Util.CheckStimulusInMonitorRange(stimulusParameters);
 
 % needs to return a map, indexed by offset, of 3d arrays for frames
 
@@ -80,8 +106,9 @@ end
         for i = 1:2
             % initialize the frame (a 2d matrix that will eventually be
             % placed into the 3d matrix we intialized above); initialize
-            % all of the values to be the background value
-            currFrame = stimulusParameters.backgroundIntensity * ones(frameSideLength, frameSideLength);
+            % all of the values to be the 1 (this will ease dealing with
+            % the specific intensities of different dimensions later)
+            currFrame = ones(frameSideLength, frameSideLength);
             
             % add a hemidisk to the current frame; to figure out which
             % pixels are in region of the hemidisk, we will construct a
@@ -107,8 +134,9 @@ end
             isWithinHemidisk = isOnBottom & isWithinCircle;
             
             % now, use that logical matrix to specify which of the values
-            % in our current frame to set to have the intensity of "dark"
-            currFrame(isWithinHemidisk) = stimulusParameters.darkIntensity;
+            % in our current frame to set to have the intensity of "dark",
+            % which for now we will set to 0
+            currFrame(isWithinHemidisk) = 0;
             
             % now add the arcs; we will start by making a counter so that
             % we can keep track of which arc we are on
@@ -140,8 +168,8 @@ end
                     isWithinArc = isWithinAngleRange & isWithinArcWidth;
                     
                     % use this logical matrix to specify which values of
-                    % the currFrame to make dark
-                    currFrame(isWithinArc) = stimulusParameters.darkIntensity;
+                    % the currFrame to make dark (still 0 for now)
+                    currFrame(isWithinArc) = 0;
                     
                     % increment the arcCounter so that the next radius will
                     % be bigger by arcRadiusIncrement
@@ -152,14 +180,24 @@ end
             % if we are on the first pass through this loop (when i is 1),
             % add the generated frame to our 3d frame in the red and green
             % channels, if it is the second pass, add it to the blue
-            % channel
+            % channel; for each channel, scale the values to get the
+            % appropriate intensities (currently currFrame is all 0's where
+            % we should have dark, and 1's where we should have background)
             if i == 1
-                frame(:, :, 1) = currFrame;
-                frame(:, :, 2) = currFrame;
+                frame(:, :, 1) = stimulusParameters.darkIntensities(1) + ...
+                    (stimulusParameters.backgroundIntensities(1) - stimulusParameters.darkIntensities(1)) * currFrame;
+                frame(:, :, 2) = stimulusParameters.darkIntensities(2) + ...
+                    (stimulusParameters.backgroundIntensities(2) - stimulusParameters.darkIntensities(2)) * currFrame;
             else
-                frame(:, :, 3) = currFrame;
+                frame(:, :, 3) = stimulusParameters.darkIntensities(3) + ...
+                    (stimulusParameters.backgroundIntensities(3) - stimulusParameters.darkIntensities(3)) * currFrame;
             end
         end
+        
+        % finally, transform from the space in which the stimulus was
+        % specified to RGB (i.e. monitor) space.
+        frame = SConePsychophysics.Utils.TransformStimulusSpace(frame, ...
+            SConePsychophysics.Constants.COLOR_SPACE_PROJECTION_MATRICES(stimulusParameters.colorSpace));
     end
 
     % this function returns a logical matrix where those values of theta

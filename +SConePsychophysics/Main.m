@@ -1,16 +1,23 @@
-function Main(stimulusParameters, generator, session, savePath, varargin)
-% parse the inputs
-ip = inputParser();
-isPositiveNumber = @(x) isnumeric(x) && numel(x) == 1 && x > 0;
-ip.addOptional('KeyboardCheckInterval', 0.250, isPositiveNumber); % in seconds
-ip.addOptional('MaxRunTime', 60, @(x) @(x) isnumeric(x) && numel(x) == 1 && x > 0); % in seconds
-ip.parse(varargin{:});
+% This function will run a prepare, run, and save the results from a single
+% experiment.  Its inputs are:
+%   stimulusParameters: an object that contains all of the parameters
+%           necessary to specify the stimulus
+%   generator: a handle to the generator function (this function must take
+%           as inputs the stimulusParameters and hardware parameters from
+%           the session, and return a cycler for the experiment)
+%   session: an SConePsychophysics.PsychtoolboxSession object that will
+%           control where the experiment is displayed
+%   savePath: a string specifying the path of the folder in which to save
+%           the results of the experiment
 
-% create the stimuli, stimulus generator will return the appropriate cycler
+function Main(stimulusParameters, generator, session, savePath)
+% create the stimulus cycler; stimulus generators will return the
+% appropriate cycler
 cycler = generator(stimulusParameters, session.hardwareParameters);
 
-% run the experiment
-results = SConePsychophysics.RunExperiment(cycler, ip.Results.KeyboardCheckInterval, ip.Results.MaxRunTime);
+% run the experiment by giving the cycler to the function that controls a
+% given experiment
+results = SConePsychophysics.RunExperiment(cycler);
 
 % clear the screen to its background
 session.Clear();
