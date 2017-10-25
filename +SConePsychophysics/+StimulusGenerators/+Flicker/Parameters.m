@@ -20,6 +20,10 @@ classdef Parameters < SConePsychophysics.Utils.Parameters
         % radius of the disc (in pixels)
         radius
         
+        % center of the spot 
+        centerX = 0
+        centerY = 0
+        
         % the color space in which the stimulus is specified (must be one
         % of the color spaces defined in the SConePsychophysics.Constants
         % file, such as SConePsychophysics.Constants.COLOR_SPACE_RGB)
@@ -53,13 +57,16 @@ classdef Parameters < SConePsychophysics.Utils.Parameters
         function parameters = DebugExample()
             parameters = SConePsychophysics.StimulusGenerators.Flicker.Parameters();
             parameters.backgroundIntensities = [0.5 0.5 0.5];
-            parameters.peakIntensities = [1 1 1];
-            parameters.frequencies = [8 8 8];
+            parameters.peakIntensities = [0.6 0.6 1];
+            parameters.frequencies = [15 15 15];
             
             parameters.offsetStepSize = 0.1;
             parameters.maxOffset = 3;
             parameters.minOffset = -3;
             parameters.radius = 100;
+            
+            parameters.centerX = 0;
+            parameters.centerY = 0;
             
             parameters.colorSpace = SConePsychophysics.Constants.COLOR_SPACE_LMS;
         end
@@ -74,6 +81,9 @@ classdef Parameters < SConePsychophysics.Utils.Parameters
             parameters.maxOffset = 3;
             parameters.minOffset = -3;
             parameters.radius = 100;
+            
+            parameters.centerX = 0;
+            parameters.centerY = 0;
             
             parameters.colorSpace = SConePsychophysics.Constants.COLOR_SPACE_LMS;
         end

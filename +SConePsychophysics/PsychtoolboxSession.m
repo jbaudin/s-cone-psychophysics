@@ -1,4 +1,4 @@
-% This is a class to manage a psychtoolbox session.  It allows the creation
+% This is a class to manage a Psychtoolbox session.  It allows the creation
 % and management of a session to be separated from the functions that
 % display stimuli for an experiment.  This will facilitate being able to
 % run multiple consecutive experiments without having to close and reopen a

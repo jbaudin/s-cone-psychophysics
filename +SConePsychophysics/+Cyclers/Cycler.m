@@ -1,4 +1,4 @@
-% A superclass for cycler objects.  A cycler is an object that manages the
+% A superclass for Cycler objects.  A Cycler is an object that manages the
 % presentation of some stimulus in which a subject will cycle through
 % different 'offsets' (defined differently depending on the specific
 % stimulus).  Upon the writing of this, there are two subclasses of Cycler

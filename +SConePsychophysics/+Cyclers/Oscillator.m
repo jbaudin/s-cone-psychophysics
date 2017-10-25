@@ -1,4 +1,4 @@
-% A cycler subclass that oscillates the different stimulus channels within
+% A Cycler subclass that oscillates the different stimulus channels within
 % a circular disc and allows for the modulation of the phase offset of the
 % 3rd channel.  This is useful for implementing stimuli such as in the
 % Stockman, 1993 beat frequency experiment.
@@ -8,7 +8,7 @@
 % values are the size of the 3rd channel phase offset (in radians) for that
 % given offset
 
-classdef Oscillator < SConePsychophysics.Cyclers.Cycler    
+classdef Oscillator < SConePsychophysics.Cyclers.Cycler
     properties
         factorsInSine
         shapeRectangles
@@ -23,14 +23,14 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
     methods
         function obj = Oscillator(hardwareParameters, stimulusParameters, stimulusComponents)
             % call superclass constructor
-           obj = obj@SConePsychophysics.Cyclers.Cycler(hardwareParameters, stimulusParameters, stimulusComponents);
-           
-           % compute some values that will be used during stimulus
-           % construction
-           obj.ComputeShapeRectangles();
-           obj.factorsInSine = 2 * pi * obj.stimulusParameters.frequencies;
-           obj.modulationAmplitudes = ...
-               obj.stimulusParameters.peakIntensities - obj.stimulusParameters.backgroundIntensities;
+            obj = obj@SConePsychophysics.Cyclers.Cycler(hardwareParameters, stimulusParameters, stimulusComponents);
+            
+            % compute some values that will be used during stimulus
+            % construction
+            obj.ComputeShapeRectangles();
+            obj.factorsInSine = 2 * pi * obj.stimulusParameters.frequencies;
+            obj.modulationAmplitudes = ...
+                obj.stimulusParameters.peakIntensities - obj.stimulusParameters.backgroundIntensities;
         end
         
         % calculate the rectangles in which the circular disc will be
@@ -38,14 +38,17 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
         % rendered in quadrants)
         function ComputeShapeRectangles(obj)
             hwParams = obj.hardwareParameters;
-
+            
             stimulusRectangle = obj.DetermineStimulusRectangle();
+            xOffset = obj.stimulusParameters.centerX;
+            yOffset = obj.stimulusParameters.centerY;
             
             if obj.hardwareParameters.renderInQuadrants
                 width = hwParams.width;
                 height = hwParams.height;
                 
-                baseRectangle = CenterRectOnPoint(obj.DetermineStimulusRectangle(), width / 4, height / 4);
+                baseRectangle = CenterRectOnPoint( ...
+                    stimulusRectangle, xOffset + width / 4, yOffset + height / 4);
                 obj.shapeRectangles = cellfun(@(x) baseRectangle + x, ...
                     {[0 0 0 0], ...
                     [(width / 2) 0 (width / 2) 0], ...
@@ -53,8 +56,10 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
                     [(width / 2) (height / 2) (width / 2) (height / 2)]}, ...
                     'UniformOutput', false);
             else
-                screenRectangle = [0 0 hwParams.frameWidth hwParams.frameHeight];
-                obj.shapeRectangles = CenterRect(stimulusRectangle, screenRectangle);
+%                 screenRectangle = [0 0 hwParams.frameWidth hwParams.frameHeight];
+%                 obj.shapeRectangles = CenterRect(stimulusRectangle, screenRectangle);
+                obj.shapeRectangles = CenterRectOnPoint( ...
+                    stimulusRectangle, xOffset + hwParams.frameWidth / 2, yOffset + hwParams.frameHeight / 2);
             end
         end
         
@@ -86,12 +91,12 @@ classdef Oscillator < SConePsychophysics.Cyclers.Cycler
         
         % calculate the color of a single disc in RGB space
         function shapeColorRGBSpace = CalculateShapeColor(obj, frameTime)
-           shapeColorStimulusSpace = obj.stimulusParameters.backgroundIntensities + obj.modulationAmplitudes .* ...
-               sin(obj.factorsInSine * frameTime + obj.currPhaseOffsets);
-           shapeColorRGBSpace = ...
-               SConePsychophysics.Constants.COLOR_SPACE_PROJECTION_MATRICES(obj.stimulusParameters.colorSpace) ...
-               * shapeColorStimulusSpace';
-           shapeColorRGBSpace = shapeColorRGBSpace';
+            shapeColorStimulusSpace = obj.stimulusParameters.backgroundIntensities + obj.modulationAmplitudes .* ...
+                sin(obj.factorsInSine * frameTime + obj.currPhaseOffsets);
+            shapeColorRGBSpace = ...
+                SConePsychophysics.Constants.COLOR_SPACE_PROJECTION_MATRICES(obj.stimulusParameters.colorSpace) ...
+                * shapeColorStimulusSpace';
+            shapeColorRGBSpace = shapeColorRGBSpace';
         end
         
         % once the cycler is done cycling, this method can be called to
